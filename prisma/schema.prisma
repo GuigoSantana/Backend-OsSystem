@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+enum StatusOrdem {
+  PENDENTE
+  EM_ANDAMENTO
+  CONCLUIDA
+  CANCELADA
+}
+
+generator client {
+  provider = "prisma-client-js"
+  //output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  createAt DateTime @default(now())
+  id       String   @id @default(uuid())
+  nome     String
+  cpf      String   @unique
+  email    String   @unique
+  senha    String
+  telefone String
+
+  clientes Cliente[]
+  produtos Produto[]
+  servicos Servico[]
+  ordens   Ordem[]
+  entradas Entradas[]
+  saidas   Saidas[]
+}
+
+model Cliente {
+  createAt DateTime @default(now())
+  id       String   @id @default(uuid())
+  nome     String
+  cpf      String   @unique
+  email    String   @unique
+  telefone String
+  endereco String
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+
+  ordens Ordem[]
+}
+
+model Ordem {
+  createAt  DateTime    @default(now())
+  id        String      @id @default(uuid())
+  descricao String
+  status    StatusOrdem
+
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
+  clienteId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+
+  produtos OrdemProduto[]
+  servicos OrdemServico[]
+}
+
+model Produto {
+  id        String  @id @default(uuid())
+  title     String
+  precov    String
+  precoc    String
+  descricao String?
+  estoque   String
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+
+  ordens OrdemProduto[]
+}
+
+model OrdemProduto {
+  ordemId   String
+  produtoId String
+
+  ordem   Ordem   @relation(fields: [ordemId], references: [id])
+  produto Produto @relation(fields: [produtoId], references: [id])
+
+  @@id([ordemId, produtoId])
+}
+
+model Servico {
+  id        String @id @default(uuid())
+  title     String
+  preco     String
+  descricao String
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+
+  ordens OrdemServico[]
+}
+
+model OrdemServico {
+  ordemId   String
+  servicoId String
+
+  ordem   Ordem   @relation(fields: [ordemId], references: [id])
+  servico Servico @relation(fields: [servicoId], references: [id])
+
+  @@id([ordemId, servicoId])
+}
+
+model Saidas {
+  id    String @id @default(uuid())
+  title String
+  preco String
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+}
+
+model Entradas {
+  id    String @id @default(uuid())
+  title String
+  preco String
+
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId String
+}
