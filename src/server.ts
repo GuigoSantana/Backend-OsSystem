@@ -8,6 +8,8 @@ import { ordemRoutes } from "./ordensConfig/ordens.routes";
 import { servicoRoutes } from "./servicosConfig/servico.routes";
 import { authRoutes } from "./authConfig/auth.routes";
 
+const port = Number(process.env.PORT) || 4000
+
 const app = fastify({ logger: true });
 app.register(cors);
 
@@ -36,7 +38,7 @@ const start = async () => {
   await app.register(entradaSaidaRoutes);
   await app.register(ordemRoutes);
   try {
-    await app.listen({ port: 3333 });
+    await app.listen({ port });
   } catch (error) {
     process.exit(1);
   }
