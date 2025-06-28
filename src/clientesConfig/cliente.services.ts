@@ -28,8 +28,8 @@ export const ClienteService = {
     return await prisma.cliente.update({ where: { id }, data });
   },
 
-  async listar() {
-    return await prisma.cliente.findMany();
+  async listar(id: string) {
+    return await prisma.cliente.findMany({where: { usuarioId: id }});
   },
 
   async excluir(id: string) {

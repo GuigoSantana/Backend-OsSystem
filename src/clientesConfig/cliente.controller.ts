@@ -50,9 +50,10 @@ export const ClienteController = {
         .send({ erro: "Erro ao excluir cliente.", detalhes: err });
     }
   },
-  async listar(_: FastifyRequest, replay: FastifyReply) {
+  async listar(req: FastifyRequest<{ Params: { id: string } }>, replay: FastifyReply) {
     try {
-      const clientes = await ClienteService.listar();
+      const usuarioId = req.params.id;
+      const clientes = await ClienteService.listar(usuarioId);
       return replay.send(clientes);
     } catch (err) {
       return replay
