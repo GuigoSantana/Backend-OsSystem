@@ -5,8 +5,8 @@ import { PrismaClientRustPanicError } from "@prisma/client/runtime/library";
 export const servicoController = {
   async criar(req: FastifyRequest, replay: FastifyReply) {
     try {
-      const { title, preco, descricao } = req.body as any;
-      const servico = await servicoService.criar({ title, preco, descricao });
+      const { title, preco, descricao, usuarioId } = req.body as any;
+      const servico = await servicoService.criar({ title, preco, descricao, usuarioId });
       return replay.code(201).send(servico);
     } catch (err) {
       return replay

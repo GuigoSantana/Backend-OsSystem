@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const EntradaSaidaService = {
-  async criarEntrada(data: { title: string; preco: string }) {
+  async criarEntrada(data: { title: string; preco: string; usuarioId: string }) {
     return await prisma.entradas.create({ data });
   },
   async excluirEntrada(id: string) {
@@ -12,7 +12,7 @@ export const EntradaSaidaService = {
   async listarEntradas() {
     return await prisma.entradas.findMany();
   },
-  async criarSaida(data: { title: string; preco: string }) {
+  async criarSaida(data: { title: string; preco: string; usuarioId: string }) {
     return await prisma.saidas.create({ data });
   },
   async excluirSaida(id: string) {

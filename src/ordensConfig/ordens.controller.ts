@@ -4,9 +4,9 @@ import { OrdemService } from "./ordens.services";
 export const OrdemController = {
   async criar(req: FastifyRequest, replay: FastifyReply) {
     try {
-      const { clienteId, status, descricao, produtos, servicos } =
+      const { clienteId, status, descricao, usuarioId, produtos, servicos } =
         req.body as any;
-      const ordem = await OrdemService.criar({ clienteId, status, descricao });
+      const ordem = await OrdemService.criar({ clienteId, status, descricao, usuarioId });
       return replay.code(201).send(ordem);
     } catch (err) {
       return replay

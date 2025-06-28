@@ -4,10 +4,11 @@ import { EntradaSaidaService } from "./entradasaida.services";
 export const EntradaSaidaController = {
   async criarEntrada(req: FastifyRequest, replay: FastifyReply) {
     try {
-      const { title, preco } = req.body as any;
+      const { title, preco, usuarioId } = req.body as any;
       const entrada = await EntradaSaidaService.criarEntrada({
         title,
         preco,
+        usuarioId
       });
       return replay.code(201).send(entrada);
     } catch (err) {
@@ -45,10 +46,11 @@ export const EntradaSaidaController = {
 
   async criarSaida(req: FastifyRequest, replay: FastifyReply) {
     try {
-      const { title, preco } = req.body as any;
+      const { title, preco, usuarioId } = req.body as any;
       const saida = await EntradaSaidaService.criarSaida({
         title,
         preco,
+        usuarioId
       });
       return replay.code(201).send(saida);
     } catch (err) {

@@ -9,6 +9,7 @@ export const ProdutoService = {
     precoc: string;
     descricao: string;
     estoque: string;
+    usuarioId: string;
   }) {
     return await prisma.produto.create({ data });
   },

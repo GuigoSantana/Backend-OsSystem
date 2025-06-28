@@ -7,6 +7,7 @@ export const servicoService = {
         title: string;
         preco: string;
         descricao: string;
+        usuarioId: string;
     }) {
         return await prisma.servico.create({data})
     },

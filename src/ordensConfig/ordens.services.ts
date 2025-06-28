@@ -6,6 +6,7 @@ type StatusOrdem = "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA" | "CANCELADA";
 
 export const OrdemService = {
   async criar(data: {
+    usuarioId: string;
     clienteId: string;
     status: StatusOrdem;
     descricao: string;
@@ -14,6 +15,7 @@ export const OrdemService = {
   }) {
     return await prisma.ordem.create({
       data: {
+        usuarioId: data.usuarioId,
         clienteId: data.clienteId,
         status: data.status,
         descricao: data.descricao,

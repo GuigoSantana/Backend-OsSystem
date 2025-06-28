@@ -4,13 +4,15 @@ import { ProdutoService } from "./produto.services";
 export const ProdutoController = {
   async criar(req: FastifyRequest, replay: FastifyReply) {
     try {
-      const { title, precoc, precov, descricao,estoque } = req.body as any;
+      const { title, precoc, precov, descricao, estoque, usuarioId } =
+        req.body as any;
       const cliente = await ProdutoService.criarProduto({
         title,
         precov,
         precoc,
         descricao,
-        estoque
+        estoque,
+        usuarioId,
       });
       return replay.code(201).send(cliente);
     } catch (err) {
@@ -38,11 +40,14 @@ export const ProdutoController = {
     }
   },
 
-  async excluir(req: FastifyRequest<{ Params: { id: string } }>, replay: FastifyReply) {
+  async excluir(
+    req: FastifyRequest<{ Params: { id: string } }>,
+    replay: FastifyReply
+  ) {
     try {
-      const id = String(req.params.id) 
+      const id = String(req.params.id);
       await ProdutoService.excluirProduto(id);
-      return replay.send({menssage: "Produto excluido com sucesso!"});
+      return replay.send({ menssage: "Produto excluido com sucesso!" });
     } catch (err) {
       return replay
         .code(400)
@@ -55,21 +60,24 @@ export const ProdutoController = {
       return replay.send(produtos);
     } catch (err) {
       return replay
-      .code(500)
-      .send({ erro: "Erro ao listar produtos.", detalhes: err });
+        .code(500)
+        .send({ erro: "Erro ao listar produtos.", detalhes: err });
     }
   },
-  async buscarId(req: FastifyRequest<{ Params: { id: string } }>, replay: FastifyReply) {
+  async buscarId(
+    req: FastifyRequest<{ Params: { id: string } }>,
+    replay: FastifyReply
+  ) {
     try {
-      const id = String(req.params.id) 
+      const id = String(req.params.id);
       const cliente = await ProdutoService.buscarPorId(id);
-      if (!cliente) return replay.code(404).send({erro: "Produto não encontrado."});
-      return replay.send(cliente)
+      if (!cliente)
+        return replay.code(404).send({ erro: "Produto não encontrado." });
+      return replay.send(cliente);
     } catch (err) {
       return replay
         .code(400)
         .send({ erro: "Erro ao buscar produtos.", detalhes: err });
     }
   },
-
 };
