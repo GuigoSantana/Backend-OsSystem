@@ -19,7 +19,7 @@ export const AuthController = {
         nome: usuario.nome,
       })
 
-      return replay.code(201).send({ detalhes: "Usuário criado com sucesso!", token});
+      return replay.code(201).send({ detalhes: "Usuário criado com sucesso!", token, usuarioId: usuario.id});
     } catch (err) {
       return replay
         .code(400)
@@ -46,7 +46,7 @@ export const AuthController = {
         nome: usuarioAuth.nome,
       })
 
-      return replay.code(200).send({detalhes: "Usuário logado com sucesso!", token, userId: usuarioAuth.id})
+      return replay.code(200).send({detalhes: "Usuário logado com sucesso!", token, usuarioId: usuarioAuth.id})
     } catch (err) {
         console.log(err)
       return replay
