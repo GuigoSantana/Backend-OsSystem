@@ -3,22 +3,22 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export const EntradaSaidaService = {
-  async criarEntrada(data: { title: string; preco: string; usuarioId: string }) {
-    return await prisma.entradas.create({ data });
+  async criarEntrada(data: { nome: string; preco: number; usuarioId: string }) {
+    return await prisma.entrada.create({ data });
   },
   async excluirEntrada(id: string) {
-    return await prisma.entradas.delete({ where: { id } });
+    return await prisma.entrada.delete({ where: { id } });
   },
   async listarEntradas() {
-    return await prisma.entradas.findMany();
+    return await prisma.entrada.findMany();
   },
-  async criarSaida(data: { title: string; preco: string; usuarioId: string }) {
-    return await prisma.saidas.create({ data });
+  async criarSaida(data: { nome: string; preco: number; usuarioId: string }) {
+    return await prisma.saida.create({ data });
   },
   async excluirSaida(id: string) {
-    return await prisma.saidas.delete({ where: { id } });
+    return await prisma.saida.delete({ where: { id } });
   },
   async listarSaidas() {
-    return await prisma.saidas.findMany();
+    return await prisma.saida.findMany();
   },
 };

@@ -2,48 +2,48 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { OrdemService } from "./ordens.services";
 
 export const OrdemController = {
-  async criar(req: FastifyRequest, replay: FastifyReply) {
+  async criar(req: FastifyRequest, reply: FastifyReply) {
     try {
       const { clienteId, status, descricao, usuarioId, produtos, servicos } =
         req.body as any;
       const ordem = await OrdemService.criar({ clienteId, status, descricao, usuarioId });
-      return replay.code(201).send(ordem);
+      return reply.code(201).send(ordem);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ message: "Erro ao criar ordem.", detalhes: err });
     }
   },
-  async listar(_: FastifyRequest, replay: FastifyReply) {
+  async listar(_: FastifyRequest, reply: FastifyReply) {
     try {
       const ordens = await OrdemService.listar();
-      return replay.code(201).send(ordens);
+      return reply.code(201).send(ordens);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ message: "Erro ao listar ordem.", detalhes: err });
     }
   },
-  async editar(req: FastifyRequest, replay: FastifyReply) {
+  async editar(req: FastifyRequest, reply: FastifyReply) {
     try {
       const { id, status, descricao } = req.body as any;
 
       const ordem = await OrdemService.editar(id, { status, descricao });
-      return replay.code(201).send(ordem);
+      return reply.code(201).send(ordem);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ message: "Erro ao editar ordem.", detalhes: err });
     }
   },
-  async excluir(req: FastifyRequest<{Params: {id: string}}>, replay: FastifyReply) {
+  async excluir(req: FastifyRequest<{Params: {id: string}}>, reply: FastifyReply) {
     try {
       const id = String(req.params.id) as any;
 
       const ordem = await OrdemService.excluir(id);
-      return replay.send("Ordem excluida com sucesso.");
+      return reply.send("Ordem excluida com sucesso.");
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ message: "Erro ao editar ordem.", detalhes: err });
     }

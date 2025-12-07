@@ -1,40 +1,43 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ProdutoService } from "./produto.services";
+import { ProdutoData, ProdutoUpdateData } from "../interfaces/interfaces";
 
 export const ProdutoController = {
-  async criar(req: FastifyRequest, replay: FastifyReply) {
+  async criar(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const { title, precoc, precov, descricao, estoque, usuarioId } =
-        req.body as any;
+      const { nome, precoVenda, precoCusto, descricao, estoque, usuarioId } =
+        req.body as ProdutoData;
+
       const cliente = await ProdutoService.criarProduto({
-        title,
-        precov,
-        precoc,
+        nome,
+        precoVenda: Number(precoVenda),
+        precoCusto: Number(precoCusto),
         descricao,
-        estoque,
+        estoque: Number(estoque),
         usuarioId,
       });
-      return replay.code(201).send(cliente);
+      return reply.code(201).send(cliente);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao criar produto.", detalhes: err });
     }
   },
 
-  async editar(req: FastifyRequest, replay: FastifyReply) {
+  async editar(req: FastifyRequest<{ Params: {id: string}}>, reply: FastifyReply) {
     try {
-      const { id, title, precov, precoc, descricao, estoque } = req.body as any;
+      const id = String(req.params.id)
+      const { nome, precoVenda, precoCusto, descricao, estoque } = req.body as ProdutoUpdateData;
       const produtoEditado = await ProdutoService.editarProduto(id, {
-        title,
-        precoc,
-        precov,
+        nome,
+        precoVenda: precoVenda !== undefined ? Number(precoVenda) : undefined,
+        precoCusto: precoCusto !== undefined ? Number(precoCusto) : undefined,
         descricao,
-        estoque,
+        estoque: estoque !== undefined ? Number(estoque) : undefined,
       });
-      return replay.send(produtoEditado);
+      return reply.send(produtoEditado);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao editar produto.", detalhes: err });
     }
@@ -42,40 +45,42 @@ export const ProdutoController = {
 
   async excluir(
     req: FastifyRequest<{ Params: { id: string } }>,
-    replay: FastifyReply
+    reply: FastifyReply
   ) {
     try {
       const id = String(req.params.id);
       await ProdutoService.excluirProduto(id);
-      return replay.send({ menssage: "Produto excluido com sucesso!" });
+      return reply.send({ message: "Produto excluido com sucesso!" });
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao excluir produto.", detalhes: err });
     }
   },
-  async listar(_: FastifyRequest, replay: FastifyReply) {
+  async listar(req: FastifyRequest<{Params: {id: string}}>, reply: FastifyReply) {
     try {
-      const produtos = await ProdutoService.listarProdutos();
-      return replay.send(produtos);
+      const usuarioId = req.params.id;
+      if(!usuarioId) return reply.code(422).send({ erro: "Informe o parâmetro id do usuário"});
+      const produtos = await ProdutoService.listarProdutos(usuarioId);
+      return reply.send(produtos);
     } catch (err) {
-      return replay
+      return reply
         .code(500)
         .send({ erro: "Erro ao listar produtos.", detalhes: err });
     }
   },
   async buscarId(
     req: FastifyRequest<{ Params: { id: string } }>,
-    replay: FastifyReply
+    reply: FastifyReply
   ) {
     try {
       const id = String(req.params.id);
       const cliente = await ProdutoService.buscarPorId(id);
       if (!cliente)
-        return replay.code(404).send({ erro: "Produto não encontrado." });
-      return replay.send(cliente);
+        return reply.code(404).send({ erro: "Produto não encontrado." });
+      return reply.send(cliente);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao buscar produtos.", detalhes: err });
     }

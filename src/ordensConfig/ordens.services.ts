@@ -1,8 +1,17 @@
 import { PrismaClient } from "@prisma/client";
-import { connect } from "http2";
 
 const prisma = new PrismaClient();
 type StatusOrdem = "PENDENTE" | "EM_ANDAMENTO" | "CONCLUIDA" | "CANCELADA";
+
+interface ProdutoPedidoInput {
+  produtoId: string;
+  quantidade: number;
+}
+
+interface ServicoPedidoInput {
+  servicoId: string;
+  quantidade: number;
+}
 
 export const OrdemService = {
   async criar(data: {
@@ -10,9 +19,47 @@ export const OrdemService = {
     clienteId: string;
     status: StatusOrdem;
     descricao: string;
-    produtos?: { produtoId: string }[];
-    servicos?: { servicoId: string }[];
+    produtos?: ProdutoPedidoInput[];
+    servicos?: ServicoPedidoInput[];
   }) {
+    const itensProduto = data.produtos
+      ? await Promise.all(
+          data.produtos.map(async (item) => {
+            const produtoOriginal = await prisma.produto.findUnique({
+              where: { id: item.produtoId },
+            });
+
+            if (!produtoOriginal)
+              throw new Error(`Produto ${item.produtoId} não encontrado`);
+
+            return {
+              produto: { connect: { id: item.produtoId } },
+              quantidade: item.quantidade,
+              precoUnitario: produtoOriginal.precoVenda,
+            };
+          })
+        )
+      : [];
+
+    const itensServico = data.servicos
+      ? await Promise.all(
+          data.servicos.map(async (item) => {
+            const servicoOriginal = await prisma.servico.findUnique({
+              where: { id: item.servicoId },
+            });
+
+            if (!servicoOriginal)
+              throw new Error(`Serviço ${item.servicoId} não encontrado`);
+
+            return {
+              servico: { connect: { id: item.servicoId } },
+              quantidade: item.quantidade,
+              precoUnitario: servicoOriginal.preco,
+            };
+          })
+        )
+      : [];
+
     return await prisma.ordem.create({
       data: {
         usuarioId: data.usuarioId,
@@ -20,23 +67,11 @@ export const OrdemService = {
         status: data.status,
         descricao: data.descricao,
         produtos: {
-          create: data.produtos?.map((p) => ({
-            produto: {
-              connect: {
-                id: p.produtoId,
-              },
-            },
-          })),
+          create: itensProduto,
         },
         servicos: {
-          create: data.servicos?.map((s) => ({
-            servico: {
-              connect: {
-                id: s.servicoId,
-              },
-            },
-          })),
-        },
+          create: itensServico,
+        }
       },
     });
   },
@@ -62,6 +97,6 @@ export const OrdemService = {
     });
   },
   async excluir(id: string) {
-    return await prisma.ordem.delete({where: {id: id}});
+    return await prisma.ordem.delete({ where: { id: id } });
   },
 };

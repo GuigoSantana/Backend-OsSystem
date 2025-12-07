@@ -1,34 +1,22 @@
 import { PrismaClient } from "@prisma/client";
+import { ProdutoData, ProdutoUpdateData } from "../interfaces/interfaces";
 
 const prisma = new PrismaClient();
 
 export const ProdutoService = {
-  async criarProduto(data: {
-    title: string;
-    precov: string;
-    precoc: string;
-    descricao: string;
-    estoque: string;
-    usuarioId: string;
-  }) {
+  async criarProduto(data: ProdutoData) {
     return await prisma.produto.create({ data });
   },
 
   async editarProduto(
     id: string,
-    data: {
-      title?: string;
-      precov?: string;
-      precoc?: string;
-      descricao?: string;
-      estoque?: string;
-    }
+    data: ProdutoUpdateData
   ) {
     return await prisma.produto.update({ where: { id }, data });
   },
 
-  async listarProdutos() {
-    return await prisma.produto.findMany();
+  async listarProdutos(usuarioId: string) {
+    return await prisma.produto.findMany({ where: { usuarioId }});
   },
 
   async excluirProduto(id: string) {

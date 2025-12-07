@@ -2,17 +2,17 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { EntradaSaidaService } from "./entradasaida.services";
 
 export const EntradaSaidaController = {
-  async criarEntrada(req: FastifyRequest, replay: FastifyReply) {
+  async criarEntrada(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const { title, preco, usuarioId } = req.body as any;
+      const { nome, preco, usuarioId } = req.body as any;
       const entrada = await EntradaSaidaService.criarEntrada({
-        title,
-        preco,
+        nome,
+        preco: Number(preco),
         usuarioId
       });
-      return replay.code(201).send(entrada);
+      return reply.code(201).send(entrada);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao criar entrada.", detalhes: err });
     }
@@ -20,41 +20,41 @@ export const EntradaSaidaController = {
 
   async excluirEntrada(
     req: FastifyRequest<{ Params: { id: string } }>,
-    replay: FastifyReply
+    reply: FastifyReply
   ) {
     try {
       const id = String(req.params.id);
       await EntradaSaidaService.excluirEntrada(id);
-      return replay.send({ menssage: "Entrada excluida com sucesso!" });
+      return reply.send({ menssage: "Entrada excluida com sucesso!" });
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao excluir entrada.", detalhes: err });
     }
   },
 
-  async listarEntradas(_: FastifyRequest, replay: FastifyReply) {
+  async listarEntradas(_: FastifyRequest, reply: FastifyReply) {
     try {
       const entradas = await EntradaSaidaService.listarEntradas();
-      return replay.send(entradas);
+      return reply.send(entradas);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ menssage: "Erro ao listar entradas.", detalhes: err });
     }
   },
 
-  async criarSaida(req: FastifyRequest, replay: FastifyReply) {
+  async criarSaida(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const { title, preco, usuarioId } = req.body as any;
+      const { nome, preco, usuarioId } = req.body as any;
       const saida = await EntradaSaidaService.criarSaida({
-        title,
-        preco,
+        nome,
+        preco: Number(preco),
         usuarioId
       });
-      return replay.code(201).send(saida);
+      return reply.code(201).send(saida);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao criar saida.", detalhes: err });
     }
@@ -62,25 +62,25 @@ export const EntradaSaidaController = {
 
   async excluirSaida(
     req: FastifyRequest<{ Params: { id: string } }>,
-    replay: FastifyReply
+    reply: FastifyReply
   ) {
     try {
       const id = String(req.params.id);
       await EntradaSaidaService.excluirSaida(id);
-      return replay.send({ menssage: "Saida excluida com sucesso!" });
+      return reply.send({ menssage: "Saida excluida com sucesso!" });
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ erro: "Erro ao excluir saida.", detalhes: err });
     }
   },
 
-  async listarSaidas(_: FastifyRequest, replay: FastifyReply) {
+  async listarSaidas(_: FastifyRequest, reply: FastifyReply) {
     try {
       const saidas = await EntradaSaidaService.listarSaidas();
-      return replay.send(saidas);
+      return reply.send(saidas);
     } catch (err) {
-      return replay
+      return reply
         .code(400)
         .send({ menssage: "Erro ao listar saidas.", detalhes: err });
     }

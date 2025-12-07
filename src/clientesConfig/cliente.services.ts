@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { ConflictError, NotFoundError } from "../utils/errors";
 
 const prisma = new PrismaClient();
 
@@ -11,6 +12,19 @@ export const ClienteService = {
     endereco: string;
     usuarioId: string;
   }) {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: data.usuarioId },
+    });
+    if (!usuario) {
+      throw new NotFoundError("Usuário não encontrado.");
+    }
+    const clienteJaExiste = await prisma.cliente.findUnique({
+      where: { cpf: data.cpf },
+    });
+    if(clienteJaExiste){
+      throw new ConflictError("O Cliente já está cadastrado.")
+    }
+
     return await prisma.cliente.create({ data });
   },
 

@@ -1,4 +1,4 @@
-import fastify from "fastify";
+import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import { clienteRoutes } from "./clientesConfig/clientes.routes";
@@ -7,22 +7,22 @@ import { entradaSaidaRoutes } from "./entradaSaidaConfig/entradasaida.routes";
 import { ordemRoutes } from "./ordensConfig/ordens.routes";
 import { servicoRoutes } from "./servicosConfig/servico.routes";
 import { authRoutes } from "./authConfig/auth.routes";
-
-const port = Number(process.env.PORT) || 3333
+const secret = process.env.SECRET_KEY;
+const port = Number(process.env.PORT) || 3333;
 
 const app = fastify({ logger: true });
 app.register(cors);
 
-// JWT Plugin 👇
+// JWT Plugin
 app.register(jwt, {
-  secret: "chave-super-secreta", // depois mova para variável de ambiente
+  secret: secret as string, 
   sign: {
-    expiresIn: "30m"
-  }
+    expiresIn: "30m",
+  },
 });
 
 // Middleware global para autenticação
-app.decorate("authenticate", async function (request: any, reply: any) {
+app.decorate("authenticate", async function (request: FastifyRequest, reply: FastifyReply) {
   try {
     await request.jwtVerify();
   } catch (err) {
@@ -38,7 +38,7 @@ const start = async () => {
   await app.register(entradaSaidaRoutes);
   await app.register(ordemRoutes);
   try {
-    await app.listen({ port, host: '0.0.0.0' });
+    await app.listen({ port, host: "0.0.0.0" });
   } catch (error) {
     process.exit(1);
   }

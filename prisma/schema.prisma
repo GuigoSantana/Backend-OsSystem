@@ -10,16 +10,17 @@ enum StatusOrdem {
 
 generator client {
   provider = "prisma-client-js"
-  //output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Usuario {
-  createAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt      // Importante para auditoria
+
   id       String   @id @default(uuid())
   nome     String
   cpf      String   @unique
@@ -31,57 +32,78 @@ model Usuario {
   produtos Produto[]
   servicos Servico[]
   ordens   Ordem[]
-  entradas Entradas[]
-  saidas   Saidas[]
+  entradas Entrada[]
+  saidas   Saida[]
 }
 
 model Cliente {
-  createAt DateTime @default(now())
   id       String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
   nome     String
   cpf      String   @unique
   email    String   @unique
   telefone String
   endereco String
 
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
   usuarioId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
 
   ordens Ordem[]
 }
 
-model Ordem {
-  createAt  DateTime    @default(now())
-  id        String      @id @default(uuid())
-  descricao String
-  status    StatusOrdem
+model Produto {
+  id         String  @id @default(uuid())
+  nome       String
+  descricao  String?
 
-  cliente   Cliente @relation(fields: [clienteId], references: [id])
-  clienteId String
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  precoVenda Float  
+  precoCusto Float
+  estoque    Int
+
   usuarioId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+
+  ordens OrdemProduto[]
+}
+
+model Servico {
+  id        String @id @default(uuid())
+  nome      String
+  descricao String
+  preco     Float
+
+  usuarioId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+
+  ordens OrdemServico[]
+}
+
+model Ordem {
+  id        String      @id @default(uuid())
+  createdAt DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  descricao String?
+  status    StatusOrdem @default(PENDENTE)
+
+  clienteId String
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
+
+  usuarioId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
 
   produtos OrdemProduto[]
   servicos OrdemServico[]
 }
 
-model Produto {
-  id        String  @id @default(uuid())
-  title     String
-  precov    String
-  precoc    String
-  descricao String?
-  estoque   String
-
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
-  usuarioId String
-
-  ordens OrdemProduto[]
-}
 
 model OrdemProduto {
   ordemId   String
   produtoId String
+
+  quantidade Int
+  precoUnitario Float
 
   ordem   Ordem   @relation(fields: [ordemId], references: [id])
   produto Produto @relation(fields: [produtoId], references: [id])
@@ -89,21 +111,14 @@ model OrdemProduto {
   @@id([ordemId, produtoId])
 }
 
-model Servico {
-  id        String @id @default(uuid())
-  title     String
-  preco     String
-  descricao String
 
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
-  usuarioId String
-
-  ordens OrdemServico[]
-}
 
 model OrdemServico {
   ordemId   String
   servicoId String
+
+  quantidade Int @default(1)
+  precoUnitario Float
 
   ordem   Ordem   @relation(fields: [ordemId], references: [id])
   servico Servico @relation(fields: [servicoId], references: [id])
@@ -111,20 +126,22 @@ model OrdemServico {
   @@id([ordemId, servicoId])
 }
 
-model Saidas {
-  id    String @id @default(uuid())
-  title String
-  preco String
+model Saida {
+  id        String @id @default(uuid())
+  createdAt DateTime @default(now())
+  nome      String
+  preco     Float
 
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
   usuarioId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
 }
 
-model Entradas {
-  id    String @id @default(uuid())
-  title String
-  preco String
+model Entrada {
+  id        String @id @default(uuid())
+  createdAt DateTime @default(now())
+  nome      String
+  preco     Float
 
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
   usuarioId String
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
 }
