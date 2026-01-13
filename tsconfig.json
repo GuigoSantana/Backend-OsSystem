@@ -33,6 +33,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true
     },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"],
     /* Modules */
     "module": "commonjs",                                /* Specify what module code is generated. */
     // "rootDir": "src",                                  /* Specify the root folder within your source files. */
