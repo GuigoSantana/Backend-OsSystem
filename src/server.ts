@@ -47,7 +47,9 @@ const start = async () => {
   await app.register(ordemRoutes);
   try {
     await app.listen({ port, host: "0.0.0.0" });
+    console.log(`Server running on port ${port}`);
   } catch (error) {
+    console.error("Error starting server:", error);
     process.exit(1);
   }
 };
