@@ -4,9 +4,9 @@ import { ProdutoController } from "./produto.controller";
 
 export async function produtosRoutes(app: FastifyInstance) {
   app.addHook("onRequest", app.authenticate);
-  app.post("/produtos", ProdutoController.criar);
-  app.get("/produtos/:id", ProdutoController.listar);
-  app.put("/produtos/:id", ProdutoController.editar);
-  app.get("/produto/:id", ProdutoController.buscarId);
-  app.delete("/produtos/:id", ProdutoController.excluir);
+  app.get("/produtos", ProdutoController.listarProdutos);
+  app.post("/produtos", ProdutoController.criarProduto);
+  app.put("/produtos/:id", ProdutoController.editarProduto);
+  app.get("/produto/:id", ProdutoController.buscarProdutoId);
+  app.delete("/produtos/:id", ProdutoController.excluirProduto);
 }

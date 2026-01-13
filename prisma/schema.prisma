@@ -19,12 +19,12 @@ datasource db {
 
 model Usuario {
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt      // Importante para auditoria
+  updatedAt DateTime @updatedAt // Importante para auditoria
 
-  id       String   @id @default(uuid())
+  id       String @id @default(uuid())
   nome     String
-  cpf      String   @unique
-  email    String   @unique
+  cpf      String @unique
+  email    String @unique
   senha    String
   telefone String
 
@@ -37,27 +37,30 @@ model Usuario {
 }
 
 model Cliente {
-  id       String   @id @default(uuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
 
   nome     String
-  cpf      String   @unique
-  email    String   @unique
+  cpf      String @unique
+  email    String @unique
   telefone String
   endereco String
 
   usuarioId String
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
 
   ordens Ordem[]
+
+  @@unique([cpf, usuarioId])
+  @@unique([email, usuarioId])
 }
 
 model Produto {
-  id         String  @id @default(uuid())
-  nome       String
-  descricao  String?
+  id        String  @id @default(uuid())
+  nome      String
+  descricao String?
 
-  precoVenda Float  
+  precoVenda Float
   precoCusto Float
   estoque    Int
 
@@ -80,9 +83,9 @@ model Servico {
 }
 
 model Ordem {
-  id        String      @id @default(uuid())
-  createdAt DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   descricao String?
   status    StatusOrdem @default(PENDENTE)
@@ -97,12 +100,11 @@ model Ordem {
   servicos OrdemServico[]
 }
 
-
 model OrdemProduto {
   ordemId   String
   produtoId String
 
-  quantidade Int
+  quantidade    Int
   precoUnitario Float
 
   ordem   Ordem   @relation(fields: [ordemId], references: [id])
@@ -111,13 +113,11 @@ model OrdemProduto {
   @@id([ordemId, produtoId])
 }
 
-
-
 model OrdemServico {
   ordemId   String
   servicoId String
 
-  quantidade Int @default(1)
+  quantidade    Int   @default(1)
   precoUnitario Float
 
   ordem   Ordem   @relation(fields: [ordemId], references: [id])
@@ -127,7 +127,7 @@ model OrdemServico {
 }
 
 model Saida {
-  id        String @id @default(uuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   nome      String
   preco     Float
@@ -137,7 +137,7 @@ model Saida {
 }
 
 model Entrada {
-  id        String @id @default(uuid())
+  id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   nome      String
   preco     Float

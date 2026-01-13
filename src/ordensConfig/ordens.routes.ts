@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import { OrdemController } from "./ordens.controller";
 
 export async function ordemRoutes(app: FastifyInstance) {
-  app.addHook("onRequest", app.authenticate);
+  app.addHook("preHandler", app.authenticate);
   app.post("/ordem", OrdemController.criar);
   app.get("/ordem", OrdemController.listar);
   app.put("/ordem", OrdemController.editar);

@@ -1,17 +1,11 @@
 import { PrismaClient } from "@prisma/client";
 import { ConflictError, NotFoundError } from "../utils/errors";
+import { ClienteData, ClienteDataUpdate } from "../types/types";
 
 const prisma = new PrismaClient();
 
 export const ClienteService = {
-  async criar(data: {
-    nome: string;
-    email: string;
-    cpf: string;
-    telefone: string;
-    endereco: string;
-    usuarioId: string;
-  }) {
+  async criarCliente(data: ClienteData) {
     const usuario = await prisma.usuario.findUnique({
       where: { id: data.usuarioId },
     });
@@ -21,35 +15,67 @@ export const ClienteService = {
     const clienteJaExiste = await prisma.cliente.findUnique({
       where: { cpf: data.cpf },
     });
-    if(clienteJaExiste){
-      throw new ConflictError("O Cliente já está cadastrado.")
+    if (clienteJaExiste) {
+      throw new ConflictError("O Cliente já está cadastrado.");
     }
-
     return await prisma.cliente.create({ data });
   },
 
-  async editar(
-    id: string,
-    data: {
-      nome?: string;
-      email?: string;
-      cpf?: string;
-      telefone?: string;
-      endereco?: string;
+  async editarCliente(data: ClienteDataUpdate) {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: data.usuarioId },
+    });
+    if (!usuario) {
+      throw new NotFoundError("Usuário não encontrado.");
     }
-  ) {
-    return await prisma.cliente.update({ where: { id }, data });
+    const cliente = await prisma.cliente.findUnique({
+      where: { id: data.id },
+    });
+    if (!cliente) {
+      throw new NotFoundError("O Cliente não foi encontrado.");
+    }
+    return await prisma.cliente.update({ where: { id: data.id }, data });
   },
 
-  async listar(usuarioId: string) {
+  async listarClientes(usuarioId: string) {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: usuarioId },
+    });
+    if (!usuario) {
+      throw new NotFoundError("Usuário não encontrado.");
+    }
     return await prisma.cliente.findMany({ where: { usuarioId } });
   },
 
-  async excluir(id: string) {
-    return await prisma.cliente.delete({ where: { id } });
+  async excluirCliente(id: string, usuarioId: string) {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: usuarioId },
+    });
+    if (!usuario) {
+      throw new NotFoundError("Usuário não encontrado.");
+    }
+    const cliente = await prisma.cliente.findUnique({
+      where: { id },
+    });
+    if (!cliente) {
+      throw new ConflictError("Cliente não encontrado.");
+    }
+    return await prisma.cliente.delete({ where: { id, usuarioId } });
   },
 
-  async buscarId(id: string) {
+  async buscarClienteId(id: string, usuarioId: string) {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: usuarioId },
+    });
+    if (!usuario) {
+      throw new NotFoundError("Usuário não encontrado.");
+    }
+    const cliente = await prisma.cliente.findUnique({
+      where: { id },
+    });
+    if (!cliente) {
+      throw new ConflictError("Cliente não encontrado.");
+    }
     return await prisma.cliente.findUnique({ where: { id } });
   },
 };

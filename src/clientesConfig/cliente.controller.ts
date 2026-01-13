@@ -1,44 +1,55 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ClienteService } from "./cliente.services";
+import { UserToken } from "../types/userTokenType";
+import { ClienteDataUpdate, ProdutoDataUpdate } from "../types/types";
 
 export const ClienteController = {
-  async criar(req: FastifyRequest, reply: FastifyReply) {
+  async criarCliente(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const { nome, email, cpf, telefone, endereco, usuarioId } =
-        req.body as any;
-      const cliente = await ClienteService.criar({
+      const { nome, email, cpf, telefone, endereco } = req.body as any;
+      const user = req.user as UserToken;
+      const usuarioId = user.sub;
+      const cliente = await ClienteService.criarCliente({
         nome,
         email,
         cpf,
         telefone,
         endereco,
-        usuarioId
+        usuarioId,
       });
       return reply.code(201).send(cliente);
-
     } catch (err: any) {
-      if(err.statusCode){
+      if (err.statusCode) {
         return reply
-        .status(err.statusCode)
-        .send({ erro: err.name, mensagem: err.message });
+          .status(err.statusCode)
+          .send({ erro: err.name, mensagem: err.message });
       }
 
       return reply.status(500).send({
         erro: "InternalServerError",
-        mensagem: "Erro inserperado no servidor."
-      })
+        mensagem: "Erro inserperado no servidor.",
+      });
     }
   },
 
-  async editar(req: FastifyRequest, reply: FastifyReply) {
+  async editarCliente(
+    req: FastifyRequest<{ Params: { id: string } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { id, nome, email, cpf, telefone, endereco } = req.body as any;
-      const clienteEditado = await ClienteService.editar(id, {
+      const id = String(req.params.id)
+      const { nome, email, cpf, telefone, endereco } =
+        req.body as ClienteDataUpdate;
+      const user = req.user as UserToken;
+      const usuarioId = user.sub;
+      const clienteEditado = await ClienteService.editarCliente({
+        id,
         nome,
         email,
         endereco,
         cpf,
         telefone,
+        usuarioId,
       });
       return reply.send(clienteEditado);
     } catch (err) {
@@ -48,13 +59,15 @@ export const ClienteController = {
     }
   },
 
-  async excluir(
+  async excluirCliente(
     req: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply
   ) {
     try {
       const id = String(req.params.id);
-      await ClienteService.excluir(id);
+      const user = req.user as UserToken;
+      const usuarioId = user.sub;
+      await ClienteService.excluirCliente(id, usuarioId);
       return reply.send({ menssage: "Cliente excluido com sucesso!" });
     } catch (err) {
       return reply
@@ -62,13 +75,11 @@ export const ClienteController = {
         .send({ erro: "Erro ao excluir cliente.", detalhes: err });
     }
   },
-  async listar(
-    req: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ) {
+  async listarClientes(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const usuarioId = req.params.id; 
-      const clientes = await ClienteService.listar(usuarioId);
+      const user = req.user as UserToken;
+      const usuarioId = user.sub;
+      const clientes = await ClienteService.listarClientes(usuarioId);
       return reply.send(clientes);
     } catch (err) {
       return reply
@@ -76,13 +87,15 @@ export const ClienteController = {
         .send({ erro: "Erro ao listar cliente.", detalhes: err });
     }
   },
-  async buscarId(
+  async buscarClienteId(
     req: FastifyRequest<{ Params: { id: string } }>,
     reply: FastifyReply
   ) {
     try {
+      const user = req.user as UserToken;
+      const usuarioId = user.sub;
       const id = String(req.params.id);
-      const cliente = await ClienteService.buscarId(id);
+      const cliente = await ClienteService.buscarClienteId(id, usuarioId);
       if (!cliente)
         return reply.code(404).send({ erro: "Cliente não encontrado." });
       return reply.send(cliente);

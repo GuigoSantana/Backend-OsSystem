@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { servicoService } from "./servico.services";
-import { PrismaClientRustPanicError } from "@prisma/client/runtime/library";
 
 export const servicoController = {
   async criar(req: FastifyRequest, reply: FastifyReply) {

@@ -4,9 +4,9 @@ import { ClienteController } from "./cliente.controller";
 
 export async function clienteRoutes(app: FastifyInstance) {
   app.addHook("onRequest", app.authenticate);
-  app.post("/clientes", ClienteController.criar);
-  app.get("/clientes/:id", ClienteController.listar);
-  app.put("/clientes", ClienteController.editar);
-  app.get("/cliente/:id", ClienteController.buscarId);
-  app.delete("/clientes/:id", ClienteController.excluir);
+  app.post("/clientes", ClienteController.criarCliente);
+  app.get("/clientes", ClienteController.listarClientes);
+  app.put("/clientes/:id", ClienteController.editarCliente);
+  app.get("/cliente/:id", ClienteController.buscarClienteId);
+  app.delete("/clientes/:id", ClienteController.excluirCliente);
 }
