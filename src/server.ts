@@ -34,7 +34,7 @@ app.decorate(
 
 const start = async () => {
   await app.register(cors, {
-    origin: "http://localhost:5173",
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -47,7 +47,9 @@ const start = async () => {
   await app.register(ordemRoutes);
   try {
     await app.listen({ port, host: "0.0.0.0" });
+    console.log(`Server running on port ${port}`);
   } catch (error) {
+    console.error("Error starting server:", error);
     process.exit(1);
   }
 };
