@@ -9,8 +9,8 @@ export const AuthController = {
         nome,
         email,
         cpf,
-        senha,
         telefone,
+        senha,
       });
 
       const token = await reply.jwtSign({

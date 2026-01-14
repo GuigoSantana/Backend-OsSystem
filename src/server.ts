@@ -1,3 +1,4 @@
+console.log("Inicio do script")
 import fastify, { FastifyReply, FastifyRequest } from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
