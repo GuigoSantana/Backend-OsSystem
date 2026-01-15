@@ -35,10 +35,9 @@ app.decorate(
 
 const start = async () => {
   await app.register(cors, {
-    origin: "*",
+    origin: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   });
   await app.register(authRoutes);
   await app.register(clienteRoutes);
