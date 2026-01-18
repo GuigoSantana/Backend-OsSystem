@@ -1,3 +1,9 @@
+export type UserToken = {
+  sub: string;
+  email: string;
+  nome: string;
+};
+
 export type ProdutoData = {
   nome: string;
   precoVenda: number;

@@ -1,14 +1,14 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ClienteService } from "./cliente.services";
-import { UserToken } from "../types/userTokenType";
+import { UserToken } from "../types/types";
 import { ClienteDataUpdate, ProdutoDataUpdate } from "../types/types";
+import { getReqUsuarioId } from "../utils/getReqUsuarioId";
 
 export const ClienteController = {
   async criarCliente(req: FastifyRequest, reply: FastifyReply) {
     try {
       const { nome, email, cpf, telefone, endereco } = req.body as any;
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const cliente = await ClienteService.criarCliente({
         nome,
         email,
@@ -40,8 +40,7 @@ export const ClienteController = {
       const id = String(req.params.id)
       const { nome, email, cpf, telefone, endereco } =
         req.body as ClienteDataUpdate;
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const clienteEditado = await ClienteService.editarCliente({
         id,
         nome,
@@ -65,8 +64,7 @@ export const ClienteController = {
   ) {
     try {
       const id = String(req.params.id);
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       await ClienteService.excluirCliente(id, usuarioId);
       return reply.send({ menssage: "Cliente excluido com sucesso!" });
     } catch (err) {
@@ -77,8 +75,7 @@ export const ClienteController = {
   },
   async listarClientes(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const clientes = await ClienteService.listarClientes(usuarioId);
       return reply.send(clientes);
     } catch (err) {
@@ -92,9 +89,8 @@ export const ClienteController = {
     reply: FastifyReply
   ) {
     try {
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
       const id = String(req.params.id);
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const cliente = await ClienteService.buscarClienteId(id, usuarioId);
       if (!cliente)
         return reply.code(404).send({ erro: "Cliente não encontrado." });

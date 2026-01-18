@@ -1,15 +1,15 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { ProdutoService } from "./produto.services";
 import { ProdutoData, ProdutoDataUpdate } from "../types/types";
-import { UserToken } from "../types/userTokenType";
+import { UserToken } from "../types/types";
+import { getReqUsuarioId } from "../utils/getReqUsuarioId";
 
 export const ProdutoController = {
   async criarProduto(req: FastifyRequest, reply: FastifyReply) {
     try {
       const { nome, precoVenda, precoCusto, descricao, estoque } =
         req.body as ProdutoData;
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const cliente = await ProdutoService.criarProduto({
         nome,
         precoVenda: Number(precoVenda),
@@ -34,8 +34,7 @@ export const ProdutoController = {
       const id = String(req.params.id);
       const { nome, precoVenda, precoCusto, descricao, estoque } =
         req.body as ProdutoDataUpdate;
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const produtoEditado = await ProdutoService.editarProduto({
         id,
         nome,
@@ -59,8 +58,7 @@ export const ProdutoController = {
   ) {
     try {
       const id = String(req.params.id);
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       await ProdutoService.excluirProduto(id, usuarioId);
       return reply.send({ message: "Produto excluido com sucesso!" });
     } catch (err) {
@@ -71,8 +69,7 @@ export const ProdutoController = {
   },
   async listarProdutos(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const produtos = await ProdutoService.listarProdutos(usuarioId);
       return reply.code(201).send(produtos);
     } catch (err) {
@@ -87,8 +84,7 @@ export const ProdutoController = {
   ) {
     try {
       const id = String(req.params.id);
-      const user = req.user as UserToken;
-      const usuarioId = user.sub;
+      const usuarioId = getReqUsuarioId(req.user as UserToken)
       const cliente = await ProdutoService.buscarPorId(id, usuarioId);
       if (!cliente)
         return reply.code(404).send({ erro: "Produto não encontrado." });
